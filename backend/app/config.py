@@ -42,9 +42,9 @@ MAX_IMAGE_BYTES = 15 * 1024 * 1024
 # SMTP / Email OTP configuration
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "santosh@ojix.in")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "eawl sctz ecgd anek")
-SMTP_FROM = os.getenv("SMTP_FROM", os.getenv("SMTP_USER", "santosh@ojix.in"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM = os.getenv("SMTP_FROM", SMTP_USER)
 SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Arundhati Gurukulam")
 SMTP_TLS = os.getenv("SMTP_TLS", "1") == "1"
 

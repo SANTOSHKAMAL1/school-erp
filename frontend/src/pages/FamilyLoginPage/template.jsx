@@ -177,7 +177,7 @@ export default function template(v) {
                           type="text"
                           value={v.otpLoginOrEmail}
                           onChange={v.setOtpLoginOrEmail}
-                          placeholder="e.g. superadmin, santosh@ojix.in"
+                          placeholder="e.g. superadmin, name@example.com"
                           style={{"borderRadius":"999px","padding":"11px 18px","fontSize":"14px","background":"#ffffff","border":"1px solid var(--color-divider)"}}
                           className={cx("input")}
                         />
