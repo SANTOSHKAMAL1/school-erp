@@ -1,0 +1,8 @@
+node_modules/
+__pycache__/
+*.pyc
+backend/venv/
+backend/data/
+backend/.env
+.vercel/
+# frontend/dist is committed on purpose: the server needs no Node to run the site

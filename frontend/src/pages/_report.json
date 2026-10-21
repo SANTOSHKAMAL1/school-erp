@@ -1,0 +1,153 @@
+{
+ "report": {
+  "home": {
+   "scripts": [
+    "/assets/lib-02-78fe0f.js",
+    "/assets/lib-03-ffd58d.js",
+    "/assets/lib-04-ea057e.js"
+   ],
+   "jsxLen": 135053,
+   "defaults": {}
+  },
+  "admissions": {
+   "scripts": [
+    "/assets/lib-02-78fe0f.js",
+    "/assets/lib-03-ffd58d.js",
+    "/assets/lib-04-ea057e.js"
+   ],
+   "jsxLen": 36637,
+   "defaults": {}
+  },
+  "contact": {
+   "scripts": [
+    "/assets/lib-02-78fe0f.js",
+    "/assets/lib-03-ffd58d.js",
+    "/assets/lib-04-ea057e.js"
+   ],
+   "jsxLen": 31932,
+   "defaults": {}
+  },
+  "login": {
+   "scripts": [
+    "/assets/lib-02-78fe0f.js",
+    "/assets/lib-04-ea057e.js"
+   ],
+   "jsxLen": 24372,
+   "defaults": {
+    "parentName": "Smt. Anuradha Rao",
+    "childName": "Ananya",
+    "childGrade": "Grade 5",
+    "attendance": 96
+   }
+  },
+  "disclosure": {
+   "scripts": [
+    "/assets/lib-02-78fe0f.js",
+    "/assets/lib-03-ffd58d.js",
+    "/assets/lib-04-ea057e.js"
+   ],
+   "jsxLen": 64701,
+   "defaults": {}
+  }
+ },
+ "assetMap": {
+  "home/24870a74-52f8-4b43-9328-5fc7c7ac1a63.js": "/assets/lib-01-951ae3.js",
+  "home/96ffd904-8c25-4f67-9d9b-08df21b1004f.woff2": "/assets/font-01-cafc19.woff2",
+  "home/11553964-dab8-46d9-8844-4a71be26cbd7.woff2": "/assets/font-02-c7371a.woff2",
+  "home/933bfa8a-6214-4a8b-9e1d-55f357088689.woff2": "/assets/font-03-eca8d8.woff2",
+  "home/4c07a0c0-fdc9-457d-9b1a-4062a02d1684.woff2": "/assets/font-04-202cfb.woff2",
+  "home/d15ffabb-7d54-4a5f-9c03-db4317ae5b6d.js": "/assets/lib-02-78fe0f.js",
+  "home/a4dafd60-a87d-4a5d-8a4d-eecabdb9bb90.js": "/assets/lib-03-ffd58d.js",
+  "home/e7068af6-7fbf-4764-940e-21b50f5eb2a9.js": "/assets/lib-04-ea057e.js",
+  "home/b47d4db8-d263-47cc-8f2d-0488879ac50f.woff2": "/assets/font-05-266e3e.woff2",
+  "home/17d19ae2-b848-4068-af04-ac46e5e57ae9.woff2": "/assets/font-06-468bd6.woff2",
+  "home/e6f701c4-d0d4-4ce6-a2dc-ab139346d439.woff2": "/assets/font-07-206b31.woff2",
+  "home/24815a36-9fca-4791-a28b-9a280af0ef7a.woff2": "/assets/font-08-c0b298.woff2",
+  "home/06861e18-ae52-46a1-aa9e-71336530c12e.woff2": "/assets/font-09-9bcf2e.woff2",
+  "home/4dbf8010-1cf1-4cd0-a79a-017f8c324358.woff2": "/assets/font-10-ce107a.woff2",
+  "home/0d6ff4ef-7943-4157-adb8-45e7b787a6dd.woff2": "/assets/font-11-56635e.woff2",
+  "home/608b886e-b3e0-460f-82fb-948005baf574.woff2": "/assets/font-12-92fd4e.woff2",
+  "home/aa88135f-7f7e-4719-a174-438d2a7bcc98.woff2": "/assets/font-13-794acb.woff2",
+  "home/e585adba-3cbc-4d2e-888d-6fa3c3d19c6e.woff2": "/assets/font-14-c548cc.woff2",
+  "home/d8ac1f66-982f-4458-8a43-bae545c60b20.woff2": "/assets/font-15-ce4b62.woff2",
+  "home/686ed159-8a08-455c-a293-188a296dfe4c.woff2": "/assets/font-16-8a85c4.woff2",
+  "home/83d49846-ce04-4e9c-89a9-d33ebec8edb1.woff2": "/assets/font-17-0941d9.woff2",
+  "home/25f11279-a06f-431c-9ecd-629309f7eb3a.woff2": "/assets/font-18-c2c6a8.woff2",
+  "home/61643a09-90ce-436a-9600-cacb3589e342.woff2": "/assets/font-19-7e823b.woff2",
+  "home/d489f5a1-4090-4167-9ced-3eda40dd832b.woff2": "/assets/font-20-b006a9.woff2",
+  "home/3f9ce797-02ab-4fbd-8d4b-285969c7634e.woff2": "/assets/font-21-d6b885.woff2",
+  "home/ba6b0ed9-35c3-4923-925d-e3eda34fedae.woff2": "/assets/font-22-ef1fba.woff2",
+  "home/760dcd75-7d50-4fda-be96-7f54527eaeaa.png": "/assets/img-01-961cb5.png",
+  "home/8d3a1ab5-6366-47df-8102-dbcda069431a.png": "/assets/img-02-9e5641.png",
+  "home/d8988d0a-cb32-43c2-8df3-32c58c02465d.png": "/assets/img-03-55c76a.png",
+  "home/83286727-a298-4ae5-a77a-ff079436b402.png": "/assets/img-04-9da6d0.png",
+  "home/73984e6f-75bc-4e74-9d7e-be4c9cbd5e7d.png": "/assets/img-05-ae0620.png",
+  "home/1a98de10-8341-4d14-bc99-8f9ff9816e10.png": "/assets/img-06-f5e5bb.png",
+  "admissions/f57ad690-8c50-4317-bc00-d23181c69057.js": "/assets/lib-01-951ae3.js",
+  "admissions/31756d6f-e204-4b2e-b06f-fd3917a154a6.woff2": "/assets/font-01-cafc19.woff2",
+  "admissions/7c117040-cf16-4ef6-826d-6a32f44a8af9.woff2": "/assets/font-02-c7371a.woff2",
+  "admissions/f789deb0-a3c2-411c-bf19-d53ebdeb04bf.woff2": "/assets/font-03-eca8d8.woff2",
+  "admissions/47f63752-4f24-4139-9a81-645aa6d76d4d.woff2": "/assets/font-04-202cfb.woff2",
+  "admissions/7a73f6ba-6689-4dac-98d9-a6ef88e91497.js": "/assets/lib-02-78fe0f.js",
+  "admissions/fab4866f-6751-44c7-ac64-67d8c4da694f.js": "/assets/lib-03-ffd58d.js",
+  "admissions/8bf7b1c0-52b0-4a2f-b244-2a0ed336c846.js": "/assets/lib-04-ea057e.js",
+  "admissions/ed5d263c-de3b-4777-8f71-22ef21471881.woff2": "/assets/font-17-0941d9.woff2",
+  "admissions/aceca37e-a41e-4dc8-b2bd-682be2079752.woff2": "/assets/font-18-c2c6a8.woff2",
+  "admissions/0fec03ad-bfc2-4796-ae99-221926f3426a.woff2": "/assets/font-19-7e823b.woff2",
+  "admissions/959b75c7-5daa-4e97-b19b-455198c1513e.woff2": "/assets/font-20-b006a9.woff2",
+  "admissions/1da8c107-566e-42c8-ae71-07f5739a2788.woff2": "/assets/font-21-d6b885.woff2",
+  "admissions/5a9df275-ef97-465e-a3c0-395e6c67b378.woff2": "/assets/font-22-ef1fba.woff2",
+  "admissions/b36420ee-a441-41f8-aadd-70635ef7e0b8.png": "/assets/img-03-55c76a.png",
+  "admissions/b3321f00-d633-4677-bfe7-dacdc4a8c819.png": "/assets/img-01-961cb5.png",
+  "admissions/7b778265-a7b3-4c18-a80b-3251f5ed84b4.png": "/assets/img-06-f5e5bb.png",
+  "contact/b3922383-f205-427d-b16b-9656ca15bc29.js": "/assets/lib-01-951ae3.js",
+  "contact/52963986-5495-4062-9f7a-b9b6bb81f300.woff2": "/assets/font-01-cafc19.woff2",
+  "contact/48c14205-c313-4641-996c-df75e7b37646.woff2": "/assets/font-02-c7371a.woff2",
+  "contact/731e0123-f70c-41ec-9fc6-96568662d82c.woff2": "/assets/font-03-eca8d8.woff2",
+  "contact/45849f55-1968-4388-872a-38801cb6271f.woff2": "/assets/font-04-202cfb.woff2",
+  "contact/8bd55db7-72f7-421e-a196-3d30268ed3c1.js": "/assets/lib-02-78fe0f.js",
+  "contact/98bbae03-3381-4ec3-8b9a-d541dbd73d95.js": "/assets/lib-03-ffd58d.js",
+  "contact/8b082aa6-ed48-4a28-a0d0-4892cf74980a.js": "/assets/lib-04-ea057e.js",
+  "contact/ed94ceb2-05d2-47cd-a7fe-4527898539b5.woff2": "/assets/font-17-0941d9.woff2",
+  "contact/59654fe5-0842-4736-8c29-aa9acd285c32.woff2": "/assets/font-18-c2c6a8.woff2",
+  "contact/8501240a-d986-4ab0-ab66-18dac9249a60.woff2": "/assets/font-19-7e823b.woff2",
+  "contact/cdfc5f3b-7ef2-445c-8393-b5d5a93f486c.woff2": "/assets/font-20-b006a9.woff2",
+  "contact/d1233160-256e-413c-acf6-6eb1cd3d91f5.woff2": "/assets/font-21-d6b885.woff2",
+  "contact/aad0eea6-e902-4057-bfbb-d9f0c9e303f9.woff2": "/assets/font-22-ef1fba.woff2",
+  "contact/43675796-d7f1-429a-b469-3c466e2ba2df.png": "/assets/img-03-55c76a.png",
+  "contact/9a895e21-5e1d-472d-8c63-0de1a7fb9e89.png": "/assets/img-01-961cb5.png",
+  "contact/87554e0e-1115-42e2-9ca8-039360c49889.png": "/assets/img-06-f5e5bb.png",
+  "login/3647c4bd-fc51-4802-b06a-7ca3bb886704.js": "/assets/lib-01-951ae3.js",
+  "login/0ed5f85f-88eb-4750-ab41-52c0808d241e.woff2": "/assets/font-01-cafc19.woff2",
+  "login/bbaf14e5-ff73-45b4-8e91-35d7e99779ac.woff2": "/assets/font-02-c7371a.woff2",
+  "login/a90295f9-065b-41d6-83d3-4daa320607e7.woff2": "/assets/font-03-eca8d8.woff2",
+  "login/6ca08944-739a-42af-ae0a-e8c578a3fd7d.woff2": "/assets/font-04-202cfb.woff2",
+  "login/b5306a13-ad72-4833-9685-d0e05701d1ec.js": "/assets/lib-02-78fe0f.js",
+  "login/822090bf-eebe-4b16-9ddb-34a9c7b10b72.js": "/assets/lib-04-ea057e.js",
+  "login/09dccce7-1859-43f9-966f-737c56270ee6.woff2": "/assets/font-17-0941d9.woff2",
+  "login/39b382f0-ba37-46cf-a8da-7f5d04f66cb4.woff2": "/assets/font-18-c2c6a8.woff2",
+  "login/89cf5e98-fd13-464d-a4b4-6fb78073a00e.woff2": "/assets/font-19-7e823b.woff2",
+  "login/cf340b62-70db-4324-beae-35997a73797e.woff2": "/assets/font-20-b006a9.woff2",
+  "login/fecbe7b6-ddee-48f1-98d2-febf5982a24f.woff2": "/assets/font-21-d6b885.woff2",
+  "login/9e85fd6d-e7e4-44a0-8364-ab2d2d281f65.woff2": "/assets/font-22-ef1fba.woff2",
+  "login/505973c4-36ba-430c-b74c-1a2d2236f37d.png": "/assets/img-01-961cb5.png",
+  "login/8998e7b5-32e7-4ee7-b8ea-6d5a6bad16fe.png": "/assets/img-06-f5e5bb.png",
+  "disclosure/1116d4c5-3f08-42ff-ac5b-3ea76137249b.js": "/assets/lib-01-951ae3.js",
+  "disclosure/a29bd4f1-b443-4aeb-a561-9c30df6062fb.woff2": "/assets/font-01-cafc19.woff2",
+  "disclosure/148174db-9aff-439e-bd23-7b120c7d828e.woff2": "/assets/font-02-c7371a.woff2",
+  "disclosure/b8bf0469-4c6a-44ae-b31a-11c91206bfdb.woff2": "/assets/font-03-eca8d8.woff2",
+  "disclosure/79281a93-3d4c-45ff-bce5-fc26e000e239.woff2": "/assets/font-04-202cfb.woff2",
+  "disclosure/cfa3cf09-daea-4811-8ad4-08681401ace6.js": "/assets/lib-02-78fe0f.js",
+  "disclosure/851c7d89-240a-40ff-98b5-41f8576f2591.js": "/assets/lib-03-ffd58d.js",
+  "disclosure/9b46516f-a417-4047-b27d-a2a59f76daef.js": "/assets/lib-04-ea057e.js",
+  "disclosure/d6925875-32a5-4669-a034-e8149a1cdc3f.woff2": "/assets/font-17-0941d9.woff2",
+  "disclosure/ca4cd9ed-e667-4cf2-88fa-4106f20c96af.woff2": "/assets/font-18-c2c6a8.woff2",
+  "disclosure/041cc3b0-acb5-4aa5-a737-d63a7c089af4.woff2": "/assets/font-19-7e823b.woff2",
+  "disclosure/9112c4e6-4477-4109-bfb0-ad5c334a766c.woff2": "/assets/font-20-b006a9.woff2",
+  "disclosure/b2f2660c-5686-45bd-9975-8cbc2e3776ab.woff2": "/assets/font-21-d6b885.woff2",
+  "disclosure/3fa78558-575a-4298-bf35-1a430ea8a46c.woff2": "/assets/font-22-ef1fba.woff2",
+  "disclosure/70eeb274-ff4d-46b0-9979-f20e48d5010d.png": "/assets/img-03-55c76a.png",
+  "disclosure/1a6f1d68-2f71-48a5-8813-9f5df597b9f4.png": "/assets/img-01-961cb5.png",
+  "disclosure/d5c84556-7804-47be-887b-a2b42e9f2c73.png": "/assets/img-06-f5e5bb.png"
+ }
+}

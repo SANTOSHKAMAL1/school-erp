@@ -1,0 +1,14 @@
+[Unit]
+Description=Arundhati Gurukulam website + portal (FastAPI)
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/arundhati-gurukulam/backend
+EnvironmentFile=/root/arundhati-gurukulam/backend/.env
+ExecStart=/root/arundhati-gurukulam/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8120 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
