@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Crud from '../Crud.jsx';
 import { api, useLoad, useMe } from '../api.js';
 import { Btn, Empty, ErrorNote, IconBtn, Loading, Modal, PageHead, Tag, toast } from '../ui.jsx';
@@ -64,7 +65,7 @@ export default function Classes() {
 
   return (
     <>
-      <PageHead kicker={me.role === 'hod' ? me.department : 'Academics'} title="Classes & subjects">
+      <PageHead kicker={me.role === 'hod' ? me.department : 'Academics'} title="Add or edit classes & subjects" actions={<Link className="pt-btn line" to="/portal/classes">Back to class cards</Link>}>
         Set up each class and section, choose its class teacher, and assign a teacher to every subject.
       </PageHead>
       <Crud url="/api/classes" title="Classes" tone="dark" noun="class" canCreate={canManage} canEdit={() => canManage} canDelete={() => canManage}

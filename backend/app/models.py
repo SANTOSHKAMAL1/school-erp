@@ -159,6 +159,40 @@ class Homework(Base):
     created_by = relationship("User")
 
 
+class Material(Base):
+    """Study material for a class — notes, worksheets, syllabus — usually a PDF."""
+    __tablename__ = "materials"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id", ondelete="CASCADE"), index=True)
+    subject_id: Mapped[int | None] = mapped_column(ForeignKey("subjects.id", ondelete="SET NULL"), nullable=True)
+    title: Mapped[str] = mapped_column(String(200))
+    description: Mapped[str] = mapped_column(Text, default="")
+    url: Mapped[str] = mapped_column(String(300))
+    filename: Mapped[str] = mapped_column(String(255), default="")
+    created_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+
+    subject = relationship("Subject")
+    created_by = relationship("User")
+
+
+class Participation(Base):
+    """A student's part in an event, competition or activity."""
+    __tablename__ = "participation"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id", ondelete="CASCADE"), index=True)
+    event: Mapped[str] = mapped_column(String(200))
+    category: Mapped[str] = mapped_column(String(40), default="")      # Sports, Cultural, Academic, Sanskrit…
+    achievement: Mapped[str] = mapped_column(String(120), default="")  # Participated, First place…
+    held_on: Mapped[date | None] = mapped_column(Date, nullable=True)
+    note: Mapped[str] = mapped_column(String(300), default="")
+    created_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+
+    student = relationship("Student")
+    created_by = relationship("User")
+
+
 class TimetableSlot(Base):
     __tablename__ = "timetable"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -177,7 +211,7 @@ class Circular(Base):
     """Notices, circulars and events. Website boards show those marked for the website."""
     __tablename__ = "circulars"
     id: Mapped[int] = mapped_column(primary_key=True)
-    category: Mapped[str] = mapped_column(String(20), default="notice")   # notice | circular | event
+    category: Mapped[str] = mapped_column(String(20), default="notice")   # notice | circular | event | meeting
     title: Mapped[str] = mapped_column(String(200), default="")
     body: Mapped[str] = mapped_column(Text)
     audience: Mapped[str] = mapped_column(String(20), default="all")     # all | parents | staff | department | class

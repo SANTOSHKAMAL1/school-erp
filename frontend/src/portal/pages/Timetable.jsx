@@ -93,11 +93,11 @@ function Editor({ cid, slots, teachers, onSaved, onCancel }) {
   );
 }
 
-export default function Timetable() {
+export default function Timetable({ classId }) {
   const me = useMe();
   const classes = useClasses();
-  const [mode, setMode] = useState(me.role === 'teacher' ? 'mine' : 'class');
-  const [cid, setCid] = useState('');
+  const [mode, setMode] = useState(me.role === 'teacher' && !classId ? 'mine' : 'class');
+  const [cid, setCid] = useState(classId ? String(classId) : '');
   const [editing, setEditing] = useState(false);
   const tt = useLoad(mode === 'mine' ? '/api/timetable' : cid ? `/api/timetable?class_id=${cid}` : null);
   const staff = useLoad(me.role !== 'teacher' ? '/api/staff' : null);
@@ -108,12 +108,12 @@ export default function Timetable() {
   const teachers = staff.data || (subs.data || []).filter((s) => s.teacher_id).map((s) => ({ id: s.teacher_id, name: s.teacher })).filter((t, i, a) => a.findIndex((x) => x.id === t.id) === i);
   return (
     <>
-      <PageHead kicker="Academics" title="Timetable" actions={<>
+      {!classId && <PageHead kicker="Academics" title="Timetable" actions={<>
         {me.role === 'teacher' && <Seg value={mode} onChange={setMode} options={[{ value: 'mine', label: 'My week' }, { value: 'class', label: 'A class' }]} />}
         {mode === 'class' && <ClassSelect classes={classes.data} value={cid} onChange={setCid} />}
       </>}>
         {mode === 'mine' ? 'Every period you teach this week. Today is highlighted.' : 'The weekly timetable for a class. Families see their child’s timetable in the portal.'}
-      </PageHead>
+      </PageHead>}
       <Card title={mode === 'mine' ? 'My week' : cls ? cls.label : 'Timetable'} tone="dark"
         right={mode === 'class' && canEdit && !editing ? <Btn kind="gold" sm icon="edit" onClick={() => setEditing(true)}>Edit</Btn> : null}>
         {tt.loading && !tt.data ? <Loading /> : editing ? <Editor cid={cid} slots={tt.data || []} teachers={teachers} onCancel={() => setEditing(false)} onSaved={(r) => { tt.setData(r); setEditing(false); }} />

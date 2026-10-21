@@ -95,16 +95,18 @@ function MonthReport({ cid }) {
   );
 }
 
-export default function Attendance() {
+export default function Attendance({ classId }) {
   const me = useMe();
   const classes = useClasses();
-  const [cid, setCid] = useState('');
+  const [cid, setCid] = useState(classId ? String(classId) : '');
   const [tab, setTab] = useState('mark');
+  const seg = <Seg value={tab} onChange={setTab} options={[{ value: 'mark', label: 'Mark a day' }, { value: 'month', label: 'Monthly register' }]} />;
+  if (classId) return <><div className="pt-actions">{seg}</div>{tab === 'mark' ? <MarkSheet cid={cid} /> : <MonthReport cid={cid} />}</>;
   const list = me.role === 'teacher' ? (classes.data || []).filter((c) => c.class_teacher_id === me.id).concat((classes.data || []).filter((c) => c.class_teacher_id !== me.id)) : classes.data;
   return (
     <>
       <PageHead kicker="Academics" title="Attendance" actions={<>
-        <Seg value={tab} onChange={setTab} options={[{ value: 'mark', label: 'Mark a day' }, { value: 'month', label: 'Monthly register' }]} />
+        {seg}
         <ClassSelect classes={list} value={cid} onChange={setCid} />
       </>}>
         Tap P for present, A absent, L late, H half day. Families see the record in their portal straight away.

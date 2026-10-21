@@ -4,18 +4,18 @@ import { useLoad, useMe } from '../api.js';
 import { ClassSelect, useClasses } from '../shared.jsx';
 import { Empty, fmtDate, Loading, PageHead, Tag, today, UploadButton } from '../ui.jsx';
 
-export default function Homework() {
+export default function Homework({ classId }) {
   const me = useMe();
   const classes = useClasses();
-  const [cid, setCid] = useState('');
+  const [cid, setCid] = useState(classId ? String(classId) : '');
   const subjects = useLoad(cid ? `/api/subjects?class_id=${cid}` : null);
   const cls = (classes.data || []).find((c) => String(c.id) === String(cid));
   const mine = (subjects.data || []).filter((s) => me.role !== 'teacher' || s.teacher_id === me.id || (cls && cls.class_teacher_id === me.id));
   return (
     <>
-      <PageHead kicker="Academics" title="Homework" actions={<ClassSelect classes={classes.data} value={cid} onChange={setCid} />}>
+      {!classId && <PageHead kicker="Academics" title="Homework" actions={<ClassSelect classes={classes.data} value={cid} onChange={setCid} />}>
         Homework appears on the family portal as soon as it is posted.
-      </PageHead>
+      </PageHead>}
       {classes.loading && !classes.data ? <Loading /> : !cid ? <Empty title="No classes yet" /> : (
         <Crud key={cid} url={`/api/homework?class_id=${cid}`} createUrl="/api/homework" itemUrl={(r) => `/api/homework/${r.id}`}
           title={cls ? cls.label : 'Homework'} tone="dark" noun="homework" createLabel="Set homework" canCreate={mine.length > 0}

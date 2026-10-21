@@ -68,13 +68,13 @@ def list_circulars(category: str | None = None, website: bool | None = None, use
 
 
 def _validate(db, user: User, body: CircularIn):
-    if body.category not in ("notice", "circular", "event"):
-        raise HTTPException(422, "Type must be notice, circular or event.")
+    if body.category not in ("notice", "circular", "event", "meeting"):
+        raise HTTPException(422, "Type must be notice, circular, event or parent–teacher meeting.")
     if not body.body.strip():
         raise HTTPException(422, "Write the text of the notice.")
     if body.audience not in ("all", "parents", "staff", "department", "class"):
         raise HTTPException(422, "Choose who should see it.")
-    if user.role != "superadmin":
+    if user.role not in ("superadmin", "hod"):
         body.on_website = False
     if body.audience == "class":
         if not body.class_id:
@@ -94,8 +94,6 @@ def _validate(db, user: User, body: CircularIn):
     else:
         if user.role == "teacher":
             deny("Teachers can send circulars to their classes.")
-        if user.role == "hod" and body.audience != "staff":
-            deny("HODs can send to their department, a class, or staff.")
         body.class_id = body.department_id = None
 
 

@@ -7,11 +7,15 @@ import { Btn, ErrorNote, Field, Icon, initials, Loading, LOGO_DARK_BG, Modal, to
 
 const Overview = lazy(() => import('./pages/Overview.jsx'));
 const People = lazy(() => import('./pages/People.jsx'));
-const Classes = lazy(() => import('./pages/Classes.jsx'));
+const ClassesHome = lazy(() => import('./pages/ClassBoard.jsx'));
+const Faculty = lazy(() => import('./pages/Faculty.jsx'));
 const Students = lazy(() => import('./pages/Students.jsx'));
 const Attendance = lazy(() => import('./pages/Attendance.jsx'));
+const Exams = lazy(() => import('./pages/Exams.jsx'));
 const Marks = lazy(() => import('./pages/Marks.jsx'));
 const Homework = lazy(() => import('./pages/Homework.jsx'));
+const Materials = lazy(() => import('./pages/Materials.jsx'));
+const Participation = lazy(() => import('./pages/Participation.jsx'));
 const Timetable = lazy(() => import('./pages/Timetable.jsx'));
 const Circulars = lazy(() => import('./pages/Circulars.jsx'));
 const Messages = lazy(() => import('./pages/Messages.jsx'));
@@ -21,69 +25,74 @@ const Website = lazy(() => import('./pages/Website.jsx'));
 const Disclosure = lazy(() => import('./pages/Disclosure.jsx'));
 const Enquiries = lazy(() => import('./pages/Enquiries.jsx'));
 const Activity = lazy(() => import('./pages/Activity.jsx'));
+const Demo = lazy(() => import('./pages/Demo.jsx'));
 const Account = lazy(() => import('./pages/Account.jsx'));
 const Family = lazy(() => import('./family/Family.jsx'));
+
+// Shared sidebar entries: [path, label, icon, element]. A path starting with "/" is a link out of the portal.
+const ACADEMICS = [
+  ['attendance', 'Attendance', 'check', <Attendance />],
+  ['exams', 'Exams & results', 'chart', <Exams />],
+  ['homework', 'Homework', 'file', <Homework />],
+  ['materials', 'Study material', 'book', <Materials />],
+  ['activities', 'Participation', 'activity', <Participation />],
+  ['timetable', 'Timetable', 'clock', <Timetable />],
+  ['marks', 'Class tests', 'edit', <Marks />],
+];
+const LIVE_EDIT = ['/?edit=1', 'Edit the live website', 'eye', null];
 
 // Sidebar per role: [group, [path, label, icon, element]]
 const NAV = {
   superadmin: [
-    ['', [['', 'Overview', 'home', <Overview />]]],
+    ['', [['', 'Dashboard', 'home', <Overview />]]],
     ['People', [
       ['departments', 'Departments', 'layers', <People kind="departments" />],
       ['hods', 'HODs', 'user', <People kind="hods" />],
-      ['teachers', 'Teachers', 'users', <People kind="teachers" />],
+      ['faculty', 'Faculty', 'users', <Faculty />],
+      ['teachers', 'Teacher logins', 'key', <People kind="teachers" />],
       ['students', 'Students & families', 'school', <Students />],
     ]],
-    ['Academics', [
-      ['classes', 'Classes & subjects', 'book', <Classes />],
-      ['attendance', 'Attendance', 'check', <Attendance />],
-      ['marks', 'Results', 'chart', <Marks />],
-      ['timetable', 'Timetable', 'clock', <Timetable />],
-      ['homework', 'Homework', 'file', <Homework />],
-    ]],
+    ['Academics', [['classes', 'Classes & sections', 'layers', <ClassesHome />], ...ACADEMICS]],
     ['Office', [
       ['fees', 'Fees', 'rupee', <Fees />],
-      ['circulars', 'Notices & circulars', 'bell', <Circulars />],
+      ['circulars', 'Notices & meetings', 'bell', <Circulars />],
       ['leaves', 'Leave requests', 'leave', <Leaves />],
       ['messages', 'Messages', 'chat', <Messages />],
       ['enquiries', 'Enquiries', 'inbox', <Enquiries />],
     ]],
     ['Website', [
-      ['website', 'Website content', 'globe', <Website />],
+      LIVE_EDIT,
+      ['website', 'Ticker, FAQs & dates', 'globe', <Website />],
       ['disclosure', 'Mandatory disclosure', 'file', <Disclosure />],
       ['activity', 'Activity log', 'activity', <Activity />],
     ]],
+    ['Setup', [['demo', 'Demo school', 'school', <Demo />]]],
   ],
   hod: [
-    ['', [['', 'Overview', 'home', <Overview />]]],
+    ['', [['', 'Dashboard', 'home', <Overview />]]],
     ['Department', [
-      ['teachers', 'Teachers', 'users', <People kind="teachers" />],
-      ['classes', 'Classes & subjects', 'book', <Classes />],
+      ['faculty', 'Faculty', 'users', <Faculty />],
+      ['classes', 'Classes & sections', 'layers', <ClassesHome />],
       ['students', 'Students', 'school', <Students />],
+      ['teachers', 'Teacher logins', 'key', <People kind="teachers" />],
     ]],
-    ['Academics', [
-      ['attendance', 'Attendance', 'check', <Attendance />],
-      ['marks', 'Results', 'chart', <Marks />],
-      ['timetable', 'Timetable', 'clock', <Timetable />],
-      ['homework', 'Homework', 'file', <Homework />],
-    ]],
+    ['Academics', ACADEMICS],
     ['Families', [
-      ['circulars', 'Circulars', 'bell', <Circulars />],
+      ['circulars', 'Notices & meetings', 'bell', <Circulars />],
       ['leaves', 'Leave requests', 'leave', <Leaves />],
       ['messages', 'Messages', 'chat', <Messages />],
     ]],
+    ['Website', [
+      LIVE_EDIT,
+      ['website', 'Ticker, FAQs & dates', 'globe', <Website />],
+      ['disclosure', 'Disclosure PDFs', 'file', <Disclosure />],
+    ]],
   ],
   teacher: [
-    ['', [['', 'Overview', 'home', <Overview />]]],
-    ['My classes', [
-      ['students', 'Students', 'school', <Students />],
-      ['attendance', 'Attendance', 'check', <Attendance />],
-      ['marks', 'Marks', 'chart', <Marks />],
-      ['homework', 'Homework', 'file', <Homework />],
-      ['timetable', 'Timetable', 'clock', <Timetable />],
-    ]],
+    ['', [['', 'Dashboard', 'home', <Overview />]]],
+    ['Teaching', [['classes', 'My classes', 'layers', <ClassesHome />], ...ACADEMICS, ['students', 'Students', 'school', <Students />]]],
     ['Families', [
-      ['circulars', 'Circulars', 'bell', <Circulars />],
+      ['circulars', 'Circulars & meetings', 'bell', <Circulars />],
       ['messages', 'Messages', 'chat', <Messages />],
       ['leaves', 'Leave requests', 'leave', <Leaves />],
     ]],
@@ -114,6 +123,10 @@ export default function Portal() {
     return () => { window.removeEventListener('ag-signed-out', out); document.title = 'Arundhati Gurukulam'; };
   }, []);
 
+  useEffect(() => {          // lets the public pages show "Edit this page" to website editors
+    try { if (me && (me.role === 'superadmin' || me.role === 'hod')) localStorage.setItem('ag-editor', '1'); else if (me) localStorage.removeItem('ag-editor'); } catch (e) { /* private mode */ }
+  }, [me && me.role]);
+
   if (!checked) return <div className="pt"><Loading /></div>;
   if (!me) return <Navigate to="/login" replace />;
 
@@ -141,7 +154,7 @@ function StaffShell({ me, signOut }) {
     return () => clearInterval(t);
   }, [loc.pathname]);
   const groups = NAV[me.role] || [];
-  const flat = groups.flatMap(([, items]) => items);
+  const flat = groups.flatMap(([, items]) => items).filter(([p]) => !p.startsWith('/'));
   const current = flat.find(([p]) => p && loc.pathname.startsWith('/portal/' + p)) || flat[0];
   const sub = me.role === 'superadmin' ? 'Administration' : me.role === 'hod' ? (me.department || 'Head of Department') : 'Staff portal';
 
@@ -156,12 +169,14 @@ function StaffShell({ me, signOut }) {
         {groups.map(([g, items]) => (
           <React.Fragment key={g || 'main'}>
             {g && <div className="pt-navgroup">{g}</div>}
-            {items.map(([p, label, icon]) => (
+            {items.map(([p, label, icon]) => (p.startsWith('/') ? (
+              <a key={p} href={p} className="pt-nav"><Icon name={icon} />{label}</a>
+            ) : (
               <NavLink key={p} to={'/portal/' + p} end={p === ''} className={({ isActive }) => `pt-nav ${isActive ? 'active' : ''}`}>
                 <Icon name={icon} />{label}
                 {p === 'messages' && unread > 0 && <span className="pt-badge">{unread}</span>}
               </NavLink>
-            ))}
+            )))}
           </React.Fragment>
         ))}
         <div className="pt-navgroup">You</div>
@@ -178,7 +193,7 @@ function StaffShell({ me, signOut }) {
             <span className="pt-avatar">{initials(me.name)}</span>
           </div>
         </div>
-        <div className="pt-content" key={loc.pathname}>
+        <div className="pt-content" key={loc.pathname.split('/').slice(0, 4).join('/')}>
           <Suspense fallback={<Loading />}>
             <Routes>
               {flat.map(([p, , , el]) => <Route key={p} path={p === '' ? '/' : p + '/*'} element={el} />)}

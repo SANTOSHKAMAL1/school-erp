@@ -1,6 +1,6 @@
 """Turn rows into JSON-friendly dicts."""
-from .models import (Assessment, Circular, ClassRoom, Department, Enquiry, Fee, Homework, LeaveRequest,
-                     Message, Student, Subject, TimetableSlot, User)
+from .models import (Assessment, Circular, ClassRoom, Department, Enquiry, Fee, Homework, LeaveRequest, Material,
+                     Message, Participation, Student, Subject, TimetableSlot, User)
 
 
 def d(v):
@@ -63,6 +63,21 @@ def homework_out(h: Homework, class_label=None):
             "subject": h.subject.name if h.subject else "General", "title": h.title, "details": h.details,
             "due_on": d(h.due_on), "attachment": h.attachment, "created_at": d(h.created_at),
             "teacher": h.created_by.name if h.created_by else None}
+
+
+def material_out(m: Material, class_label=None):
+    return {"id": m.id, "class_id": m.class_id, "class_label": class_label, "subject_id": m.subject_id,
+            "subject": m.subject.name if m.subject else "General", "title": m.title, "description": m.description,
+            "url": m.url, "filename": m.filename, "created_at": d(m.created_at), "created_by_id": m.created_by_id,
+            "teacher": m.created_by.name if m.created_by else None}
+
+
+def participation_out(p: Participation):
+    st = p.student
+    return {"id": p.id, "student_id": p.student_id, "student": st.name if st else None,
+            "class_label": st.classroom.label if st and st.classroom else None, "event": p.event,
+            "category": p.category, "achievement": p.achievement, "held_on": d(p.held_on), "note": p.note,
+            "created_by_id": p.created_by_id, "recorded_by": p.created_by.name if p.created_by else None}
 
 
 def slot_out(t: TimetableSlot):

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from .. import config, storage
@@ -155,14 +155,14 @@ EDITABLE = {"ticker", "faqs", "terms", "holidays", "school"}
 
 
 @router.get("/site/{key}")
-def read_setting(key: str, user: User = Depends(superadmin), db: Session = Depends(get_db)):
+def read_setting(key: str, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
     if key not in EDITABLE and key != "disclosure_text":
         raise HTTPException(404, "Unknown section.")
     return {"key": key, "value": get_setting(db, key), "default": DEFAULTS.get(key)}
 
 
 @router.put("/site/{key}")
-def write_setting(key: str, body: dict, user: User = Depends(superadmin), db: Session = Depends(get_db)):
+def write_setting(key: str, body: dict, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
     if key not in EDITABLE:
         raise HTTPException(404, "Unknown section.")
     value = body.get("value")
@@ -185,7 +185,7 @@ def write_setting(key: str, body: dict, user: User = Depends(superadmin), db: Se
 
 
 @router.delete("/site/{key}")
-def reset_setting(key: str, user: User = Depends(superadmin), db: Session = Depends(get_db)):
+def reset_setting(key: str, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
     row = db.get(SiteSetting, key)
     if row:
         db.delete(row)
@@ -194,9 +194,58 @@ def reset_setting(key: str, user: User = Depends(superadmin), db: Session = Depe
     return {"key": key, "value": DEFAULTS.get(key)}
 
 
+# ---------------- live-site edits ----------------
+# Text and photos changed in place on the public pages: {"text": {original: new}, "img": {original src: new src}}.
+class SiteEditIn(BaseModel):
+    kind: str
+    original: str
+    value: str | None = None      # None (or the original) puts the original back
+
+
+@router.put("/site-edits")
+def save_site_edit(body: SiteEditIn, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
+    if body.kind not in ("text", "img"):
+        raise HTTPException(422, "Unknown kind of edit.")
+    original = body.original.strip()
+    if not original or len(original) > 3000:
+        raise HTTPException(422, "That piece of the page cannot be edited.")
+    value = body.value.strip() if body.value is not None else None
+    if value is not None and len(value) > 6000:
+        raise HTTPException(422, "Keep it under 6,000 characters.")
+    if body.kind == "img" and value and not value.startswith(("/uploads/", "https://", "/images/", "/assets/")):
+        raise HTTPException(422, "Upload the photo first.")
+    row = db.get(SiteSetting, "page_edits")
+    data = dict(row.value) if row else {}
+    bucket = dict(data.get(body.kind) or {})
+    if not value or value == original:
+        bucket.pop(original, None)
+    else:
+        if len(bucket) >= 3000 and original not in bucket:
+            raise HTTPException(422, "Too many edits — restore some first.")
+        bucket[original] = value
+    data[body.kind] = bucket
+    if row:
+        row.value = data
+    else:
+        db.add(SiteSetting(key="page_edits", value=data))
+    audit(db, user, "site.edit", f"{body.kind}: {original[:60]}")
+    db.commit()
+    return data
+
+
+@router.delete("/site-edits")
+def reset_site_edits(user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
+    row = db.get(SiteSetting, "page_edits")
+    if row:
+        db.delete(row)
+        audit(db, user, "site.edit.reset")
+        db.commit()
+    return {}
+
+
 # ---------------- Mandatory Disclosure ----------------
 @router.put("/disclosure/text")
-def save_disclosure_text(body: dict, user: User = Depends(superadmin), db: Session = Depends(get_db)):
+def save_disclosure_text(body: dict, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
     values = body.get("values") or {}
     clean = {k: str(values[k]).strip()[:MAX_TEXT] for k in TEXT_KEYS if isinstance(values.get(k), str)}
     row = db.get(SiteSetting, "disclosure_text")
@@ -215,7 +264,7 @@ def _safe_name(name: str) -> str:
 
 
 @router.post("/disclosure/docs/{key}")
-async def upload_disclosure(key: str, file: UploadFile = File(...), user: User = Depends(superadmin),
+async def upload_disclosure(key: str, file: UploadFile = File(...), user: User = Depends(admin_or_hod),
                             db: Session = Depends(get_db)):
     if key not in DOC_KEYS:
         raise HTTPException(404, "Unknown row.")
@@ -240,7 +289,7 @@ async def upload_disclosure(key: str, file: UploadFile = File(...), user: User =
 
 
 @router.delete("/disclosure/docs/{key}")
-def delete_disclosure(key: str, user: User = Depends(superadmin), db: Session = Depends(get_db)):
+def delete_disclosure(key: str, user: User = Depends(admin_or_hod), db: Session = Depends(get_db)):
     for old in db.scalars(select(DisclosureDoc).where(DisclosureDoc.key == key)):
         storage.remove(old.stored)
         db.delete(old)
@@ -365,6 +414,12 @@ def family_overview(user: User = Depends(current_user), db: Session = Depends(ge
                             .order_by(Assessment.held_on.desc().nulls_last(), Assessment.id.desc())) if st.class_id else None
     homework = db.scalars(select(Homework).where(Homework.class_id == st.class_id)
                           .order_by(Homework.created_at.desc()).limit(5)).all() if st.class_id else []
+    homework_today = db.scalars(select(Homework).where(Homework.class_id == st.class_id,
+                                                       Homework.created_at >= datetime.combine(today, datetime.min.time()))
+                                .order_by(Homework.created_at.desc())).all() if st.class_id else []
+    meetings = db.scalars(visible_circulars(db, user).where(Circular.category == "meeting",
+                                                            or_(Circular.event_on >= today, Circular.event_on.is_(None)))
+                          .order_by(Circular.event_on.nulls_last()).limit(3)).all()
     unread = count(db, Message, Message.student_id == st.id, Message.from_parent.is_(False), Message.read.is_(False))
 
     def money(v):
@@ -381,6 +436,7 @@ def family_overview(user: User = Depends(current_user), db: Session = Depends(ge
         "student": {"id": st.id, "name": st.name, "admission_no": st.admission_no, "roll_no": st.roll_no,
                     "class_id": st.class_id, "class_label": c.label if c else "—",
                     "class_teacher": c.class_teacher.name if c and c.class_teacher else None,
+                    "class_teacher_phone": c.class_teacher.phone if c and c.class_teacher else "",
                     "parent_name": st.parent_name or user.name},
         "school": get_setting(db, "school"),
         "today": today.isoformat(),
@@ -396,8 +452,7 @@ def family_overview(user: User = Depends(current_user), db: Session = Depends(ge
             {"label": "Next event", "value": (f"{upcoming.event_on.day} {upcoming.event_on.strftime('%b')}" if upcoming else "—"),
              "note": (circular_text(upcoming)[:90] if upcoming else "No events scheduled")},
             {"label": "Latest result", "value": "Published" if last_result else "—",
-             "note": (f"{last_result.name}" + (f" · {last_result.subject.name}" if last_result.subject else "")
-                      if last_result else "Results appear here once published")},
+             "note": (f"{last_result.name} — see the report card" if last_result else "Results appear here once published")},
         ],
         "attendance": att,
         "fees": {"due_total": due_total, "due_label": money(due_total) if fees_due else "₹ 0",
@@ -408,5 +463,36 @@ def family_overview(user: User = Depends(current_user), db: Session = Depends(ge
                       for x in circs],
         "circulars_new": fresh,
         "homework": [homework_out(h, c.label if c else None) for h in homework],
+        "homework_today": [homework_out(h, c.label if c else None) for h in homework_today],
+        "meetings": [{**circular_out(x), "text": circular_text(x),
+                      "when": long_date(x.event_on) if x.event_on else None} for x in meetings],
         "unread_messages": unread,
     }
+
+
+# ---------------- demo school (for trying the portal) ----------------
+@router.get("/demo")
+def demo_status(user: User = Depends(superadmin), db: Session = Depends(get_db)):
+    from ..seed import DEMO_ACCOUNTS, DEMO_PASSWORD, demo_loaded
+    return {"loaded": demo_loaded(db), "password": DEMO_PASSWORD, "accounts": DEMO_ACCOUNTS}
+
+
+@router.post("/demo")
+def load_demo(user: User = Depends(superadmin), db: Session = Depends(get_db)):
+    from ..seed import DEMO_PASSWORD, demo
+    try:
+        accounts = demo(db, verbose=False)
+    except ValueError as e:
+        raise HTTPException(409, str(e))
+    audit(db, user, "demo.load")
+    db.commit()
+    return {"loaded": True, "password": DEMO_PASSWORD, "accounts": accounts}
+
+
+@router.delete("/demo")
+def unload_demo(user: User = Depends(superadmin), db: Session = Depends(get_db)):
+    from ..seed import DEMO_ACCOUNTS, DEMO_PASSWORD, remove_demo
+    remove_demo(db)
+    audit(db, user, "demo.remove")
+    db.commit()
+    return {"loaded": False, "password": DEMO_PASSWORD, "accounts": DEMO_ACCOUNTS}
