@@ -113,6 +113,7 @@ export default function Portal() {
   useDesignCss();
   const me = useMe();
   const [checked, setChecked] = useState(!!me);
+  const [later, setLater] = useState(() => { try { return sessionStorage.getItem('ag-pw-later') === '1'; } catch (e) { return false; } });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -137,7 +138,8 @@ export default function Portal() {
       <Suspense fallback={<Loading />}>
         {me.role === 'parent' ? <Family me={me} signOut={signOut} /> : <StaffShell me={me} signOut={signOut} />}
       </Suspense>
-      {me.must_change_password && <ForcePassword me={me} signOut={signOut} />}
+      {me.must_change_password && !later && <ForcePassword me={me} signOut={signOut}
+        onLater={() => { try { sessionStorage.setItem('ag-pw-later', '1'); } catch (e) { /* private mode */ } setLater(true); }} />}
     </div>
   );
 }
@@ -207,7 +209,7 @@ function StaffShell({ me, signOut }) {
   );
 }
 
-function ForcePassword({ me, signOut }) {
+function ForcePassword({ me, signOut, onLater }) {
   const [cur, setCur] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
@@ -222,10 +224,10 @@ function ForcePassword({ me, signOut }) {
       .catch((e2) => { setErr(e2); setBusy(false); });
   };
   return (
-    <Modal title="Set your own password" kicker={`Welcome, ${me.name}`}
-      footer={<><Btn kind="line" onClick={signOut}>Sign out</Btn><Btn kind="primary" disabled={busy} onClick={submit}>{busy ? 'Saving…' : 'Save password'}</Btn></>}>
+    <Modal title="Set your own password" kicker={`Welcome, ${me.name}`} onClose={onLater}
+      footer={<><Btn kind="ghost" onClick={onLater} style={{ marginRight: 'auto' }}>Not now</Btn><Btn kind="line" onClick={signOut}>Sign out</Btn><Btn kind="primary" disabled={busy} onClick={submit}>{busy ? 'Saving…' : 'Save password'}</Btn></>}>
       <p style={{ fontSize: 15, lineHeight: 1.6, color: 'var(--color-neutral-800)' }}>
-        You signed in with a temporary password. Choose a new one that only you know — at least 8 characters, with letters and numbers.
+        You signed in with a temporary password. Choose a new one that only you know — at least 8 characters, with letters and numbers. You can also do it later under Account & password.
       </p>
       <form className="pt-form" onSubmit={submit}>
         <Field label="Temporary password" full><input className="pt-input" type="password" value={cur} onChange={(e) => setCur(e.target.value)} autoComplete="current-password" /></Field>
