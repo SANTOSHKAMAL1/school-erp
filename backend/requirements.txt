@@ -3,3 +3,6 @@ uvicorn[standard]==0.32.1
 sqlalchemy==2.0.36
 pyjwt==2.10.1
 python-multipart==0.0.20
+python-dotenv==1.2.4
+psycopg[binary]==3.3.6
+vercel-blob==0.5.0

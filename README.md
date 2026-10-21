@@ -38,6 +38,14 @@ Updates: `git pull && systemctl restart arundhati-gurukulam`
 
 **Forgot the super admin password:** `venv/bin/python -m app.seed --reset-superadmin` sets it back to the password in `.env`.
 
+## Host on Vercel
+`vercel.json` runs the React site and the FastAPI backend as two services in one Vercel project (`/api/*` and `/uploads/*` go to the backend, everything else to the site).
+1. Import the repo in Vercel and keep the **Services** preset.
+2. Under **Storage**, connect a **Neon** Postgres database (sets `DATABASE_URL`) and a **Blob** store with public access (sets `BLOB_READ_WRITE_TOKEN`). Without these the database and uploads live in `/tmp` and are lost whenever Vercel starts a new instance.
+3. Add environment variables: `AG_SECRET_KEY` (a long random string), `AG_SUPERADMIN_PASSWORD`, `AG_SUPERADMIN_NAME`, and the `SMTP_*` values from `.env.example`. Then redeploy.
+
+The super admin account is created on the first request. Vercel caps request bodies at 4.5 MB, so uploads on Vercel must be smaller than that, even though the app itself allows up to 40 MB.
+
 ## Change the front end
 ```bash
 cd frontend && npm install && npm run dev      # dev server on :5173 (API proxied to :8120)

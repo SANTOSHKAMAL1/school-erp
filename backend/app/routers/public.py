@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from .. import storage
 from ..content import DEFAULTS, DOC_KEYS, TEXT_KEYS, MAX_TEXT
 from ..db import get_db
 from ..models import Circular, DisclosureDoc, Enquiry, SiteSetting
@@ -109,7 +110,7 @@ def disclosure_docs(db: Session = Depends(get_db)):
     docs = {}
     for d in db.scalars(select(DisclosureDoc).order_by(DisclosureDoc.uploaded_at)):
         if d.key in DOC_KEYS:
-            url = f"/uploads/{d.stored}"
+            url = storage.url_for(d.stored)
             docs[d.key] = {"url": url, "downloadUrl": url + "?download=1", "name": d.filename,
                            "size": d.size, "uploadedAt": d.uploaded_at.isoformat() + "Z"}
     saved = get_setting(db, "disclosure_text") or {}

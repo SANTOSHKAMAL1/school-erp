@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from .. import config
+from .. import config, storage
 from ..content import DEFAULTS, DOC_KEYS, MAX_TEXT, PHOTO_KEYS, TEXT_KEYS
 from ..db import get_db
 from ..models import (Assessment, Attendance, AuditLog, Circular, ClassRoom, Department, DisclosureDoc, Enquiry,
@@ -229,13 +229,11 @@ async def upload_disclosure(key: str, file: UploadFile = File(...), user: User =
         if not name.lower().endswith(".pdf") or not data.startswith(b"%PDF") or len(data) > config.MAX_PDF_BYTES:
             raise HTTPException(422, "Upload a PDF up to 40 MB.")
     rel = f"disclosure/{key}/{secrets.token_hex(4)}-{_safe_name(name)}"
-    dest = config.UPLOAD_DIR / rel
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(data)
+    stored = await storage.save(rel, data, file.content_type)
     for old in db.scalars(select(DisclosureDoc).where(DisclosureDoc.key == key)):
-        (config.UPLOAD_DIR / old.stored).unlink(missing_ok=True)
+        storage.remove(old.stored)
         db.delete(old)
-    db.add(DisclosureDoc(key=key, filename=name, stored=rel, size=len(data)))
+    db.add(DisclosureDoc(key=key, filename=name, stored=stored, size=len(data)))
     audit(db, user, "disclosure.upload", f"{key}: {name}")
     db.commit()
     return {"ok": True}
@@ -244,7 +242,7 @@ async def upload_disclosure(key: str, file: UploadFile = File(...), user: User =
 @router.delete("/disclosure/docs/{key}")
 def delete_disclosure(key: str, user: User = Depends(superadmin), db: Session = Depends(get_db)):
     for old in db.scalars(select(DisclosureDoc).where(DisclosureDoc.key == key)):
-        (config.UPLOAD_DIR / old.stored).unlink(missing_ok=True)
+        storage.remove(old.stored)
         db.delete(old)
     audit(db, user, "disclosure.delete", key)
     db.commit()
@@ -264,10 +262,8 @@ async def upload_file(file: UploadFile = File(...), user: User = Depends(staff))
     if len(data) > config.MAX_PDF_BYTES:
         raise HTTPException(422, "Files can be up to 40 MB.")
     rel = f"files/{date.today():%Y/%m}/{secrets.token_hex(5)}-{_safe_name(name)}"
-    dest = config.UPLOAD_DIR / rel
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(data)
-    return {"url": f"/uploads/{rel}", "name": name, "size": len(data)}
+    stored = await storage.save(rel, data, file.content_type)
+    return {"url": storage.url_for(stored), "name": name, "size": len(data)}
 
 
 # ---------------- activity ----------------
