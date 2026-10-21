@@ -74,8 +74,8 @@ export default function Marks() {
   });
   return (
     <>
-      <PageHead kicker="Academics" title={me.role === 'teacher' ? 'Marks' : 'Results'} actions={<ClassSelect classes={classes.data} value={cid} onChange={setCid} />}>
-        Create an assessment, enter marks, then publish — families see published results in their portal.
+      <PageHead kicker="Academics" title="Class tests" actions={<ClassSelect classes={classes.data} value={cid} onChange={setCid} />}>
+        Unit tests and other assessments for one subject at a time. For Mid-term, Quarterly, Half-yearly and Annual, use Exams & results.
       </PageHead>
       {classes.loading && !classes.data ? <Loading /> : !cid ? <Empty title="No classes yet" /> : (
         <Crud key={cid + ':' + n} url={`/api/assessments?class_id=${cid}`} createUrl="/api/assessments" itemUrl={(r) => `/api/assessments/${r.id}`}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLoad, useMe } from '../api.js';
 import { Card, Empty, ErrorNote, fmtDate, fmtTime, Icon, Loading, MANDALA, money, PageHead, Stat, Tag, useReveal, WEEKDAYS } from '../ui.jsx';
+import { MyClassCards } from './ClassBoard.jsx';
 
 function greet() {
   const h = new Date().getHours();
@@ -51,6 +52,13 @@ export default function Overview() {
         <div className="pt-reveal"><Stat label="Messages" value={d.unread_messages} note="Unread from families" /></div>
       </div>
 
+      {me.role === 'teacher' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="pt-head"><div><span className="k">Tap a class to open it</span><h1 style={{ fontSize: 24 }}>My classes</h1></div></div>
+          <MyClassCards />
+        </div>
+      )}
+
       <div className="pt-grid" style={{ '--min': '340px' }}>
         {me.role === 'teacher' && (
           <Card title={`Today · ${WEEKDAYS[new Date().getDay() - 1] || 'Sunday'}`} tone="gold" className="pt-reveal">
@@ -94,12 +102,14 @@ export default function Overview() {
         </Card>
         <Card title="Quick actions" className="pt-reveal" pad>
           <div style={{ display: 'grid', gap: 10, gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', marginTop: 4 }}>
-            {(me.role === 'superadmin' ? [['hods', 'Add an HOD', 'user'], ['website', 'Edit the website', 'globe'], ['fees', 'Record a payment', 'rupee'], ['disclosure', 'Disclosure PDFs', 'file']]
-              : me.role === 'hod' ? [['teachers', 'Add a teacher', 'users'], ['classes', 'Set up a class', 'book'], ['timetable', 'Edit timetable', 'clock'], ['circulars', 'Send a circular', 'bell']]
-                : [['attendance', 'Mark attendance', 'check'], ['students', 'Add a student', 'school'], ['marks', 'Enter marks', 'chart'], ['homework', 'Set homework', 'file']]
-            ).map(([p, l, i]) => (
+            {(me.role === 'superadmin' ? [['hods', 'Add an HOD', 'user'], ['/?edit=1', 'Edit the live website', 'eye'], ['classes', 'Classes & sections', 'layers'], ['fees', 'Record a payment', 'rupee'], ['circulars', 'Post a notice', 'bell'], ['demo', 'Demo school', 'school']]
+              : me.role === 'hod' ? [['faculty', 'Faculty', 'users'], ['classes', 'Classes & sections', 'layers'], ['exams', 'Exam results', 'chart'], ['circulars', 'Call a parent meeting', 'bell'], ['/?edit=1', 'Edit the live website', 'eye'], ['teachers', 'Add a teacher', 'plus']]
+                : [['attendance', 'Mark attendance', 'check'], ['exams', 'Enter exam marks', 'chart'], ['homework', 'Set homework', 'file'], ['materials', 'Share a PDF', 'upload']]
+            ).map(([p, l, i]) => (p.startsWith('/') ? (
+              <a key={p} href={p} className="pt-btn line" style={{ justifyContent: 'flex-start', borderRadius: 16, padding: '14px 16px' }}><Icon name={i} />{l}</a>
+            ) : (
               <Link key={p} to={'/portal/' + p} className="pt-btn line" style={{ justifyContent: 'flex-start', borderRadius: 16, padding: '14px 16px' }}><Icon name={i} />{l}</Link>
-            ))}
+            )))}
           </div>
         </Card>
       </div>

@@ -8,12 +8,12 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config
 from .db import Base, SessionLocal, engine
-from .routers import academics, auth, comms, office, people, public, records
+from .routers import academics, auth, classwork, comms, office, people, public, records
 from .seed import ensure_base_data
 
 app = FastAPI(title="Arundhati Gurukulam", docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)
 
-for r in (auth, public, people, academics, records, comms, office):
+for r in (auth, public, people, academics, records, classwork, comms, office):
     app.include_router(r.router)
 
 

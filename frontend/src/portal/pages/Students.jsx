@@ -54,26 +54,27 @@ function Reset({ s }) {
   );
 }
 
-export default function Students() {
+/** All students, or one class's students when `classId` is given (inside the class workspace). */
+export default function Students({ classId }) {
   const me = useMe();
   const classes = useClasses();
-  const [cid, setCid] = useState('');
+  const [cid, setCid] = useState(classId ? String(classId) : '');
   const [view, setView] = useState(null);
   const managed = (classes.data || []).filter((c) => me.role !== 'teacher' || c.class_teacher_id === me.id);
   const cls = (classes.data || []).find((c) => String(c.id) === String(cid));
-  const canAdd = me.role !== 'teacher' ? managed.length > 0 : managed.length > 0;
+  const canAdd = classId ? managed.some((c) => String(c.id) === String(classId)) : managed.length > 0;
   const canChange = (r) => me.role !== 'teacher' || managed.some((c) => c.id === r.class_id);
 
   return (
     <>
-      <PageHead kicker={me.role === 'teacher' ? 'My classes' : 'People'} title={me.role === 'superadmin' ? 'Students & families' : 'Students'}>
+      {!classId && <PageHead kicker={me.role === 'teacher' ? 'My classes' : 'People'} title={me.role === 'superadmin' ? 'Students & families' : 'Students'}>
         Adding a student creates the family login at the same time — the admission number is the Family ID, and parents can also sign in with the registered mobile number.
-      </PageHead>
+      </PageHead>}
       <Crud key={cid} url={`/api/students?include_inactive=true${cid ? `&class_id=${cid}` : ''}`} createUrl="/api/students" itemUrl={(r) => `/api/students/${r.id}`}
         title={cls ? `${cls.label} · class teacher ${cls.class_teacher || '—'}` : 'All students'} tone="dark" noun="student" modalWide
         canCreate={canAdd} canEdit={canChange} canDelete={(r) => canChange(r) && r.active}
         searchKeys={['name', 'admission_no', 'parent_name', 'phone', 'class_label']}
-        filters={<ClassSelect classes={classes.data} value={cid} onChange={setCid} auto={false} allLabel="All my classes" />}
+        filters={classId ? null : <ClassSelect classes={classes.data} value={cid} onChange={setCid} auto={false} allLabel="All my classes" />}
         defaults={{ class_id: cid || (managed[0] ? String(managed[0].id) : ''), active: true }}
         columns={[
           { label: 'Student', render: (r) => <button type="button" onClick={() => setView(r)} className="pt-name" style={{ border: 0, background: 'none', cursor: 'pointer', textAlign: 'left', padding: 0, color: 'inherit' }}>

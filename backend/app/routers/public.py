@@ -64,6 +64,7 @@ def site(db: Session = Depends(get_db)):
         "holidays": get_setting(db, "holidays"),
         "school": get_setting(db, "school"),
         "boards": website_boards(db),
+        "edits": get_setting(db, "page_edits") or {},
     }
 
 

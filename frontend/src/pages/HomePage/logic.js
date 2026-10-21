@@ -20,7 +20,7 @@ class HomePageLogic extends DCLogic {
     try { seen = !!window.__AG_NAV || /[?&]nav=1/.test(window.location.search || ''); } catch (e) {}
     if (seen) {
       this.setState({ welcome: 'gone' });
-      this.noticeTimer = setTimeout(() => this.setState({ notice: true }), 1200);
+      this.noticeTimer = setTimeout(() => { if (!window.__AG_EDITING) this.setState({ notice: true }); }, 1200);
     }
 
     this.timer = setInterval(() => {
@@ -43,7 +43,7 @@ class HomePageLogic extends DCLogic {
       this.unbind();
       var muted = !!this.noticeMuted;
       this.gone = setTimeout(() => this.setState({ welcome: 'gone' }), 900);
-      if (!muted) this.noticeTimer = setTimeout(() => this.setState({ notice: true }), 1600);
+      if (!muted) this.noticeTimer = setTimeout(() => { if (!window.__AG_EDITING) this.setState({ notice: true }); }, 1600);
     };
     this.onKey = (e) => {
       if ([' ', 'Enter', 'ArrowDown', 'PageDown', 'End'].indexOf(e.key) > -1) this.dismiss();

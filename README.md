@@ -11,6 +11,14 @@ The public website (Home, Admissions, Contact, Mandatory Disclosure, Login) look
 | **Teacher** | Students (with a family login) | Their classes: attendance, marks, homework, timetable, circulars, messages, leave |
 | **Parent / Student** (one login) | — | Dashboard, attendance calendar, results, homework, timetable, fees + receipts, circulars, messages to the class teacher, leave requests |
 
+**ERP screens (Build 02):**
+- **Classes & sections** — every grade as a card; open one to see its sections with student count and class teacher; open a section for its workspace: Overview, Students, Attendance, Exams & results, Homework, Study material, Participation, Timetable.
+- **Exams & results** — one sheet per class for Mid-term, Quarterly, Half-yearly and Annual (or any other test): all subjects × all students, totals, % and rank. Subject teachers type their own column; the class teacher (or HOD / admin) presses **Announce result** and families see it in the **Report card**.
+- **Faculty** (HOD, admin) — each teacher as a card with the section they look after, every subject and class they teach, and their weekly timetable.
+- **Family portal** — report card from Mid-term to Annual, today's homework, study-material PDFs, activities & prizes, parent–teacher meetings, and *Call the school* / *Call the class teacher* buttons.
+- **Edit the live website** (admin, HOD) — open the site with `/?edit=1` (or press *Edit this page*): click any text or photo to change it, or add a notice, circular or event with a PDF to the home page boards. Edits are stored as replacements and show for every visitor straight away; *Undo all edits* puts the original back.
+- **Demo school** (admin → Setup) — one button loads a full sample school with ready logins (`hod.primary`, `t.anitha`, family `9876543210`, password `Demo@1234`); one button removes it again before going live. Same as `python -m app.seed --demo` / `--remove-demo`.
+
 Everyone signs in on `/login` and picks their role tab. Every new account gets a temporary password, and the system asks them to change it the first time they sign in.
 
 ## Folder layout
@@ -34,7 +42,7 @@ nginx -t && systemctl reload nginx && certbot --nginx -d arundhatigurukulam.ac.i
 ```
 Updates: `git pull && systemctl restart arundhati-gurukulam`
 
-**Try it with sample data** (optional, before real use): `venv/bin/python -m app.seed --demo` adds 3 departments, 3 HODs, 10 teachers, 13 classes and 104 students. All demo accounts use the password `Demo@1234`: `hod.primary`, `t.anitha`, and the family mobile `9876543210`. To get back to a clean school, stop the service, delete `backend/data/` and run `python -m app.seed` again.
+**Try it with sample data** (optional, before real use): `venv/bin/python -m app.seed --demo` (or *Demo school* in the admin portal) adds 3 departments, 3 HODs, 16 teachers, 16 sections and 128 students with attendance, Mid-term and Quarterly results, homework, study PDFs, participation and a parent–teacher meeting. All demo accounts use the password `Demo@1234`: `hod.primary`, `t.anitha`, and the family mobile `9876543210`. `python -m app.seed --remove-demo` (or *Remove demo school*) takes it all out again; records the school added itself stay.
 
 **Forgot the super admin password:** `venv/bin/python -m app.seed --reset-superadmin` sets it back to the password in `.env`.
 

@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage/index.jsx';
+import LiveEdit from './lib/liveEdit.jsx';
 import { setNavigator } from './lib/nav.js';
 
 const AdmissionsPage = lazy(() => import('./pages/AdmissionsPage/index.jsx'));
@@ -72,6 +73,7 @@ export default function App() {
         <Route path="/portal/*" element={<Portal />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
+      <LiveEdit />
     </Suspense>
   );
 }

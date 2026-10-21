@@ -6,11 +6,14 @@ import { api, useLoad } from '../api.js';
 import Account from '../pages/Account.jsx';
 import { Receipt } from '../pages/Fees.jsx';
 import { Conversation } from '../pages/Messages.jsx';
+import { MaterialList } from '../pages/Materials.jsx';
+import { prizeTone } from '../pages/Participation.jsx';
 import { Grid } from '../pages/Timetable.jsx';
-import { Btn, Card, Empty, ErrorNote, fmtDate, initials, Loading, LOGO_DARK_BG, Modal, money, PageHead, Stat, STATUS_WORD, Tag, toast, today, useReveal } from '../ui.jsx';
+import { Btn, Card, Empty, ErrorNote, fmtDate, Icon, initials, Loading, LOGO_DARK_BG, Modal, money, PageHead, Stat, STATUS_WORD, Tag, toast, today, useReveal } from '../ui.jsx';
 
-const TABS = [['', 'Home'], ['attendance', 'Attendance'], ['results', 'Results'], ['homework', 'Homework'], ['timetable', 'Timetable'],
-  ['fees', 'Fees'], ['circulars', 'Circulars'], ['messages', 'Messages'], ['leave', 'Leave'], ['account', 'Account']];
+const TABS = [['', 'Home'], ['attendance', 'Attendance'], ['results', 'Report card'], ['homework', 'Homework'], ['materials', 'Study material'],
+  ['timetable', 'Timetable'], ['activities', 'Activities'], ['fees', 'Fees'], ['circulars', 'Notices & meetings'], ['messages', 'Messages'],
+  ['leave', 'Leave'], ['account', 'Account']];
 
 const box = { minWidth: 0, background: 'var(--color-neutral-100)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' };
 const kicker = { fontSize: '11.5px', letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--color-accent-700)' };
@@ -51,6 +54,8 @@ export default function Family({ me, signOut }) {
             <Route path="attendance" element={<FamAttendance d={fam.data} />} />
             <Route path="results" element={<FamResults d={fam.data} />} />
             <Route path="homework" element={<FamHomework d={fam.data} />} />
+            <Route path="materials" element={<FamMaterials d={fam.data} />} />
+            <Route path="activities" element={<FamActivities d={fam.data} />} />
             <Route path="timetable" element={<FamTimetable d={fam.data} />} />
             <Route path="fees" element={<FamFees d={fam.data} />} />
             <Route path="circulars" element={<FamCirculars d={fam.data} />} />
@@ -93,6 +98,21 @@ function Home({ d, reload }) {
             <span style={{ fontSize: '13.5px', lineHeight: 1.5, color: 'var(--color-neutral-700)' }}>{s.note}</span>
           </div>
         ))}
+      </div>
+
+      <div className="fp-contact pt-reveal">
+        {d.meetings.map((m) => (
+          <div key={m.id} className="fp-ptm">
+            <span className="k">Parent–teacher meeting</span>
+            <b>{m.when || 'Date to be announced'}</b>
+            <span>{m.title && m.title !== 'Parent–teacher meeting' ? `${m.title} — ` : ''}{m.body}</span>
+          </div>
+        ))}
+        <div className="fp-calls">
+          {school.phone && <a className="fp-call" href={`tel:${school.phone.replace(/\s/g, '')}`}><Icon name="phone" size={20} /><span>Call the school<small>{school.phone}</small></span></a>}
+          {d.student.class_teacher_phone && <a className="fp-call" href={`tel:${d.student.class_teacher_phone}`}><Icon name="phone" size={20} /><span>Call {d.student.class_teacher || 'the class teacher'}<small>{d.student.class_teacher_phone}</small></span></a>}
+          <Link className="fp-call alt" to="/portal/messages"><Icon name="chat" size={20} /><span>Message the class teacher<small>Replies on weekday afternoons</small></span></Link>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(330px,100%),1fr))', gap: 20, alignItems: 'start' }}>
@@ -143,13 +163,14 @@ function Home({ d, reload }) {
       {d.homework.length > 0 && (
         <div style={box} className="pt-reveal">
           <div style={{ padding: '16px 22px', background: 'var(--color-accent-2-200)', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: 'var(--color-accent-900)' }}>Homework</span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: 'var(--color-accent-900)' }}>{d.homework_today.length ? 'Today’s homework' : 'Homework'}</span>
+            {d.homework_today.length > 0 && <Tag tone="gold">{d.homework_today.length} new today</Tag>}
             <Link to="/portal/homework" style={{ marginLeft: 'auto', fontSize: 13.5 }}>See all</Link>
           </div>
-          {d.homework.slice(0, 3).map((h) => (
+          {(d.homework_today.length ? d.homework_today : d.homework.slice(0, 3)).map((h) => (
             <div key={h.id} style={{ display: 'flex', gap: 16, alignItems: 'baseline', padding: '13px 22px', borderBottom: '1px solid var(--color-divider)', flexWrap: 'wrap' }}>
               <span style={{ flex: '0 0 120px', fontSize: '12.5px', letterSpacing: '.06em', color: 'var(--color-accent-700)', fontWeight: 600 }}>{h.subject}</span>
-              <span style={{ flex: '1 1 260px', fontSize: 15 }}>{h.title}</span>
+              <span style={{ flex: '1 1 260px', fontSize: 15 }}>{h.title}{h.attachment && <> · <a href={h.attachment} target="_blank" rel="noreferrer">worksheet</a></>}</span>
               {h.due_on && <span style={{ fontSize: 13, color: 'var(--color-neutral-600)' }}>Due {fmtDate(h.due_on)}</span>}
             </div>
           ))}
@@ -218,29 +239,108 @@ function FamAttendance({ d }) {
   );
 }
 
+const grade = (p) => (p == null ? '—' : p >= 91 ? 'A1' : p >= 81 ? 'A2' : p >= 71 ? 'B1' : p >= 61 ? 'B2' : p >= 51 ? 'C1' : p >= 41 ? 'C2' : p >= 33 ? 'D' : 'E');
+const pct = (m, x) => (x ? Math.round((1000 * m) / x) / 10 : null);
+
 function FamResults({ d }) {
   const r = useLoad(`/api/results/student/${d.student.id}`);
-  const groups = {};
-  (r.data || []).forEach((x) => { (groups[x.name] = groups[x.name] || []).push(x); });
+  const order = useLoad('/api/exams');
+  const rows = r.data || [];
+  const known = order.data || ['Mid-term', 'Quarterly', 'Half-yearly', 'Annual'];
+  const exams = [...known.filter((n) => rows.some((x) => x.name === n)), ...[...new Set(rows.map((x) => x.name))].filter((n) => !known.includes(n))];
+  const subjects = [...new Set([...rows].sort((a, b) => (a.subject_id || 0) - (b.subject_id || 0)).map((x) => x.subject))];   // timetable order
+  const cell = (sub, ex) => rows.find((x) => x.subject === sub && x.name === ex);
+  const totals = exams.map((ex) => {
+    const xs = rows.filter((x) => x.name === ex && x.marks != null);
+    const got = xs.reduce((a, x) => a + x.marks, 0), out = xs.reduce((a, x) => a + x.max_marks, 0);
+    return { ex, got, out, p: pct(got, out) };
+  });
   return (
     <>
-      <PageHead kicker={d.student.class_label} title="Results">Marks appear here once the teacher publishes them.</PageHead>
-      {r.loading ? <Loading /> : !Object.keys(groups).length ? <Card><Empty title="No results yet" /></Card> :
-        Object.entries(groups).map(([name, rows]) => {
-          const tot = rows.reduce((a, x) => a + (x.marks || 0), 0), max = rows.reduce((a, x) => a + x.max_marks, 0);
-          return (
-            <Card key={name} title={name} tone="dark" right={<Tag tone="gold">{max ? Math.round((100 * tot) / max) : 0}% overall</Tag>}>
+      <PageHead kicker={d.student.class_label} title="Report card" actions={rows.length > 0 && <Btn kind="line" icon="print" onClick={() => window.print()}>Print</Btn>}>
+        Marks for every subject, from the Mid-term to the Annual examination. Each result appears once the class teacher announces it.
+      </PageHead>
+      {r.loading ? <Loading /> : !rows.length ? <Card><Empty title="No results yet">Results appear here once the class teacher announces them.</Empty></Card> : (
+        <>
+          <div className="pt-grid" style={{ '--min': '170px' }}>
+            {totals.map((t) => (
+              <div key={t.ex} className="pt-card pt-stat">
+                <span className="l">{t.ex}</span>
+                <span className="v">{t.p != null ? t.p + '%' : '—'}</span>
+                <div className="pt-bar"><i style={{ width: (t.p || 0) + '%' }} /></div>
+                <span className="n">{t.out ? `${t.got} / ${t.out} · Grade ${grade(t.p)}` : 'Not announced'}</span>
+              </div>
+            ))}
+          </div>
+          <Card title={`${d.student.name} · ${d.student.class_label}`} tone="dark" right={<Tag tone="gold">{d.school && d.school.academic_year}</Tag>}>
+            <div className="pt-tablewrap"><table className="pt-table fp-report">
+              <thead><tr><th>Subject</th>{exams.map((ex) => <th key={ex} className="num">{ex}</th>)}</tr></thead>
+              <tbody>
+                {subjects.map((sub) => (
+                  <tr key={sub}><td><b style={{ fontWeight: 600 }}>{sub}</b></td>
+                    {exams.map((ex) => {
+                      const c = cell(sub, ex);
+                      return <td key={ex} className="num">{c && c.marks != null ? <>{c.marks}<span className="muted"> / {c.max_marks}</span><small>{grade(c.percent)}</small></> : <span className="muted">—</span>}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot><tr><th>Total</th>{totals.map((t) => <th key={t.ex} className="num">{t.out ? `${t.got} / ${t.out}` : '—'}<small>{t.p != null ? `${t.p}% · ${grade(t.p)}` : ''}</small></th>)}</tr></tfoot>
+            </table></div>
+          </Card>
+          {exams.map((ex) => (
+            <Card key={ex} title={ex} tone="gold">
               <div className="pt-tablewrap"><table className="pt-table">
                 <thead><tr><th>Subject</th><th className="num">Marks</th><th style={{ width: '34%' }}>Score</th><th className="num">Class average</th><th>Remark</th></tr></thead>
-                <tbody>{rows.map((x) => (
+                <tbody>{rows.filter((x) => x.name === ex).map((x) => (
                   <tr key={x.id}><td><b style={{ fontWeight: 600 }}>{x.subject}</b><div className="muted">{fmtDate(x.held_on)}</div></td>
                     <td className="num">{x.marks == null ? '—' : `${x.marks} / ${x.max_marks}`}</td>
                     <td><div className="pt-bar"><i style={{ width: (x.percent || 0) + '%' }} /></div></td>
                     <td className="num muted">{x.class_average ?? '—'}</td><td className="muted">{x.remark}</td></tr>))}</tbody>
               </table></div>
             </Card>
-          );
-        })}
+          ))}
+        </>
+      )}
+    </>
+  );
+}
+
+function FamMaterials({ d }) {
+  const m = useLoad('/api/materials');
+  return (
+    <>
+      <PageHead kicker={d.student.class_label} title="Study material">Notes, worksheets and syllabus shared by the teachers. Open or download any of them.</PageHead>
+      <Card title="From the teachers" tone="dark"><div style={{ padding: 18 }}>{m.loading ? <Loading /> : <MaterialList items={m.data || []} />}</div></Card>
+    </>
+  );
+}
+
+function FamActivities({ d }) {
+  const a = useLoad('/api/participation');
+  const rows = a.data || [];
+  const prizes = rows.filter((x) => prizeTone(x.achievement) !== 'grey');
+  return (
+    <>
+      <PageHead kicker={d.student.class_label} title="Activities & achievements">Competitions, recitations, sports and events {d.student.name.split(' ')[0]} took part in.</PageHead>
+      <div className="pt-grid" style={{ '--min': '200px' }}>
+        <Stat label="Took part in" value={rows.length} note="Events and activities this year" />
+        <Stat label="Prizes & merits" value={prizes.length} note={prizes[0] ? `${prizes[0].achievement} — ${prizes[0].event}` : 'Keep going!'} tone="marigold" />
+      </div>
+      <Card title="This year" tone="dark">
+        {a.loading ? <Loading /> : !rows.length ? <Empty title="Nothing recorded yet">Teachers record competitions and events here.</Empty> : (
+          <div className="pt-list">{rows.map((x) => (
+            <div key={x.id} style={{ alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="fp-trophy"><Icon name="trophy" size={20} /></span>
+              <span style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <span className="meta">{fmtDate(x.held_on, true)}{x.category ? ` · ${x.category}` : ''}</span>
+                <b style={{ fontWeight: 600, fontSize: 15.5 }}>{x.event}</b>
+                {x.note && <span style={{ fontSize: 14, color: 'var(--color-neutral-700)' }}>{x.note}</span>}
+              </span>
+              <Tag tone={prizeTone(x.achievement)}>{x.achievement}</Tag>
+            </div>))}</div>
+        )}
+      </Card>
     </>
   );
 }
@@ -310,14 +410,14 @@ function FamCirculars({ d }) {
   const c = useLoad('/api/circulars');
   return (
     <>
-      <PageHead kicker="From the school" title="Circulars & notices" />
+      <PageHead kicker="From the school" title="Notices, circulars & meetings" />
       <Card title="For your family" tone="dark">
         {c.loading ? <Loading /> : !(c.data || []).length ? <Empty title="Nothing yet" /> : (
           <div className="pt-list">{c.data.map((x) => (
             <div key={x.id} style={{ flexDirection: 'column', gap: 6 }}>
-              <span className="meta">{fmtDate(x.publish_on, true)} · {x.category}{x.class_label ? ` · ${x.class_label}` : ''}</span>
+              <span className="meta">{fmtDate(x.publish_on, true)} · {x.category === 'meeting' ? 'Parent–teacher meeting' : x.category}{x.class_label ? ` · ${x.class_label}` : ''}</span>
               <span style={{ fontSize: 15, lineHeight: 1.6 }}>{x.title && <b style={{ fontWeight: 600 }}>{x.title}: </b>}{x.body}</span>
-              {x.event_on && <span className="muted" style={{ fontSize: 13, color: 'var(--color-neutral-600)' }}>On {fmtDate(x.event_on, true)}</span>}
+              {x.event_on && <span className="muted" style={{ fontSize: 13, color: 'var(--color-neutral-600)' }}>{x.category === 'meeting' ? <Tag tone="gold">Meeting on {fmtDate(x.event_on, true)}</Tag> : `On ${fmtDate(x.event_on, true)}`}</span>}
               {x.attachment && <a href={x.attachment} target="_blank" rel="noreferrer">Open attachment</a>}
             </div>))}</div>
         )}
