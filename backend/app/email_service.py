@@ -15,7 +15,7 @@ def send_otp_email(to_email: str, recipient_name: str, otp: str, expires_minutes
     host = config.SMTP_HOST
     port = config.SMTP_PORT
     user = config.SMTP_USER
-    # Remove any internal spaces from app passwords like "eawl sctz ecgd anek"
+    # Remove any internal spaces from app passwords like "abcd efgh ijkl mnop"
     password = config.SMTP_PASSWORD.replace(" ", "") if config.SMTP_PASSWORD else ""
     from_email = config.SMTP_FROM or user
     from_name = config.SMTP_FROM_NAME or "Arundhati Gurukulam"
